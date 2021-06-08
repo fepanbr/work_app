@@ -1,0 +1,76 @@
+{
+  "project_info": {
+    "project_number": "851812924280",
+    "project_id": "commuteapp-6ca01",
+    "storage_bucket": "commuteapp-6ca01.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:851812924280:android:00f50ad7872676973d668d",
+        "android_client_info": {
+          "package_name": "com.songareeit.commute_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "851812924280-f6dee7crlqbrle2chfofm2bpoc2cb6pn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAvpd5nvn1XxOKYVJpSL4hED1YjNrWursE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "851812924280-f6dee7crlqbrle2chfofm2bpoc2cb6pn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:851812924280:android:81982bd36b545fde3d668d",
+        "android_client_info": {
+          "package_name": "com.songareeit.work_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "851812924280-5oeaoe0g8s4i6eqld5pucr08jocdebss.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.songareeit.work_app",
+            "certificate_hash": "dbc5fca5045d6badc28edb2e0f2f2dfdd90c9933"
+          }
+        },
+        {
+          "client_id": "851812924280-f6dee7crlqbrle2chfofm2bpoc2cb6pn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAvpd5nvn1XxOKYVJpSL4hED1YjNrWursE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "851812924280-f6dee7crlqbrle2chfofm2bpoc2cb6pn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
