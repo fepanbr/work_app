@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
               textTheme:
                   GoogleFonts.poppinsTextTheme(Theme.of(context).textTheme),
             ),
-            initialRoute: '/login',
+            initialRoute: '/',
             getPages: [
               GetPage(name: '/', page: () => HomePage()),
               GetPage(name: '/login', page: () => LoginPage()),
