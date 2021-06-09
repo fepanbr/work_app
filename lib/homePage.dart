@@ -1,5 +1,7 @@
 import 'package:commute_app/constants.dart';
 import 'package:commute_app/loginPage.dart';
+import 'package:commute_app/mainPage.dart';
+import 'package:commute_app/weeklyWorkPage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -12,6 +14,23 @@ class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
   late TabController tabController;
   List<Tab> tabs = [];
+  int _selectedIndex = 0;
+  static const TextStyle optionStyle =
+      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+  static List<Widget> _widgetOptions = <Widget>[
+    MainPage(),
+    WeeklyWorkPage(),
+    Text(
+      'Index 2: School',
+      style: optionStyle,
+    ),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
 
   @override
   void initState() {
@@ -30,35 +49,29 @@ class _HomePageState extends State<HomePage>
           return Scaffold(
             appBar: AppBar(
               elevation: 0,
+              title: Text('Work App'),
+              centerTitle: true,
             ),
-            body: Stack(
-              children: [
-                Container(
-                  height: 200,
-                  decoration: BoxDecoration(
-                    color: kBackgroundColor,
-                  ),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: kPrimaryColor,
-                      borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(40),
-                        bottomRight: Radius.circular(40),
-                      ),
-                    ),
-                  ),
+            bottomNavigationBar: BottomNavigationBar(
+              items: const <BottomNavigationBarItem>[
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.home_outlined),
+                  label: '메인',
                 ),
-                Container(
-                  margin: EdgeInsets.fromLTRB(kDefaultPadding, 50,
-                      kDefaultPadding, kDefaultPadding / 2),
-                  height: 250,
-                  decoration: BoxDecoration(
-                    color: kBackgroundColor,
-                    borderRadius: BorderRadius.all(Radius.circular(16)),
-                  ),
-                )
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.list),
+                  label: '근무시간관리',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.calendar_today),
+                  label: '연차관리',
+                ),
               ],
+              currentIndex: _selectedIndex,
+              selectedItemColor: kPrimaryColor,
+              onTap: _onItemTapped,
             ),
+            body: _widgetOptions.elementAt(_selectedIndex),
           );
         }
       },
