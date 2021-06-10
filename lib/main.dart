@@ -1,6 +1,6 @@
 import 'package:commute_app/constants.dart';
 import 'package:commute_app/homePage.dart';
-import 'package:commute_app/loginPage.dart';
+import 'package:commute_app/pages/loginPage.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
