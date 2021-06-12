@@ -1,0 +1,1 @@
+enum WorkState { BEFORE_WORK, WORKING, AFTER_WORK }

@@ -1,12 +1,28 @@
+import 'package:commute_app/components/workingBar.dart';
 import 'package:commute_app/constants.dart';
+import 'package:commute_app/models/WorkState.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:percent_indicator/linear_percent_indicator.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
-class MainPage extends StatelessWidget {
+class MainPage extends StatefulWidget {
   const MainPage({
     Key? key,
   }) : super(key: key);
+
+  @override
+  _MainPageState createState() => _MainPageState();
+}
+
+class _MainPageState extends State<MainPage> {
+  late WorkState _workState;
+
+  @override
+  void initState() {
+    super.initState();
+    _workState = WorkState.BEFORE_WORK;
+  }
+
+  Future<void> startWork() async {}
 
   @override
   Widget build(BuildContext context) {
@@ -114,7 +130,7 @@ class MainPage extends StatelessWidget {
                             child: Container(
                           child: Center(
                             child: Text(
-                              '00 : 00',
+                              '1 시간 10분',
                               style: TextStyle(
                                   fontSize: 20, fontWeight: FontWeight.bold),
                             ),
@@ -139,7 +155,7 @@ class MainPage extends StatelessWidget {
                             child: Container(
                           child: Center(
                             child: Text(
-                              '00 : 00',
+                              '8시간 20분',
                               style: TextStyle(
                                   fontSize: 20, fontWeight: FontWeight.bold),
                             ),
@@ -156,35 +172,7 @@ class MainPage extends StatelessWidget {
         SizedBox(
           height: 30,
         ),
-        Expanded(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                height: 50,
-                child: Row(
-                  children: [
-                    SizedBox(
-                      width: (Get.width - 50) * 0.9,
-                    ),
-                    Icon(
-                      Icons.directions_run_outlined,
-                      size: 50,
-                    ),
-                  ],
-                ),
-              ),
-              new LinearPercentIndicator(
-                lineHeight: 10.0,
-                // percent: _value.restTime,
-                linearStrokeCap: LinearStrokeCap.roundAll,
-                progressColor: kPrimaryColor,
-                percent: 0.9,
-              ),
-            ],
-          ),
-        ),
+        WorkingBar(),
         Expanded(
           child: Column(
             children: [
@@ -198,9 +186,26 @@ class MainPage extends StatelessWidget {
                 height: 10,
               ),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  setState(() {
+                    if (_workState == WorkState.BEFORE_WORK) {
+                      _workState = WorkState.WORKING;
+                    } else if (_workState == WorkState.WORKING) {
+                      _workState = WorkState.AFTER_WORK;
+                    } else {
+                      Fluttertoast.showToast(
+                          msg: "하루에 출근은 한번만 하세요..",
+                          toastLength: Toast.LENGTH_SHORT,
+                          gravity: ToastGravity.CENTER,
+                          timeInSecForIosWeb: 1,
+                          backgroundColor: Colors.red,
+                          textColor: Colors.white,
+                          fontSize: 16.0);
+                    }
+                  });
+                },
                 child: Text(
-                  '출근하기',
+                  _workState == WorkState.WORKING ? '퇴근하기' : '출근하기',
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.w400),
                 ),
                 style: ButtonStyle(

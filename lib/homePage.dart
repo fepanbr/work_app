@@ -1,7 +1,7 @@
 import 'package:commute_app/constants.dart';
 import 'package:commute_app/pages/loginPage.dart';
 import 'package:commute_app/pages/mainPage.dart';
-import 'package:commute_app/weeklyWorkPage.dart';
+import 'package:commute_app/pages/weeklyWorkPage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
