@@ -1,8 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:commute_app/components/workingBar.dart';
 import 'package:commute_app/constants.dart';
-import 'package:commute_app/models/WorkState.dart';
+import 'package:commute_app/models/work.dart';
+import 'package:commute_app/models/workState.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({
@@ -15,6 +18,11 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   late WorkState _workState;
+  final workRef =
+      FirebaseFirestore.instance.collection('work').withConverter<Work>(
+            fromFirestore: (snapshot, _) => Work.fromJson(snapshot.data()!),
+            toFirestore: (work, _) => work.toJson(),
+          );
 
   @override
   void initState() {
@@ -22,7 +30,28 @@ class _MainPageState extends State<MainPage> {
     _workState = WorkState.BEFORE_WORK;
   }
 
-  Future<void> startWork() async {}
+  Future<void> startWork() async {
+    await workRef
+        .add(
+          Work(
+            startTime: DateFormat("yyyyMMddHHmm").format(DateTime.now()),
+            endTime: Work.defaultWorkTime(),
+            haveMeal: false,
+            mealTime: Work.defaultMealTime(),
+            workingTime: Work.defaultWorkingTime(),
+          ),
+        )
+        .then((value) => print('저장되었습니다. $value'))
+        .catchError((e) {
+      print(e);
+    });
+  }
+
+  //TODO: 시작시간 검색 만들기
+  Future<void> searchWork() async {
+    // QuerySnapshot<Work> works =
+    //     await workRef.where('startTime', )
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -62,110 +91,121 @@ class _MainPageState extends State<MainPage> {
                       offset: Offset(0, 3), // changes position of shadow
                     ),
                   ]),
-              child: Column(
-                children: [
-                  Expanded(
-                    child: Row(
+              child: StreamBuilder<Object>(
+                  stream: FirebaseFirestore.instance
+                      .collection('work')
+                      .where('startTime', isEqualTo: DateTime.now().toString())
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    return Column(
                       children: [
-                        Container(
-                          width: 120,
-                          child: Center(
-                            child: Text(
-                              '출근시간',
-                              style: TextStyle(fontSize: 20),
-                            ),
+                        Expanded(
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 120,
+                                child: Center(
+                                  child: Text(
+                                    '출근시간',
+                                    style: TextStyle(fontSize: 20),
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                  child: Container(
+                                child: Center(
+                                  child: Text(
+                                    '00 : 00',
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ))
+                            ],
                           ),
                         ),
                         Expanded(
-                            child: Container(
-                          child: Center(
-                            child: Text(
-                              '00 : 00',
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ))
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 120,
-                          child: Center(
-                            child: Text(
-                              '퇴근시간',
-                              style: TextStyle(fontSize: 20),
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                            child: Container(
-                          child: Center(
-                            child: Text(
-                              '00 : 00',
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ))
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 120,
-                          child: Center(
-                            child: Text(
-                              '식사시간',
-                              style: TextStyle(fontSize: 20),
-                            ),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 120,
+                                child: Center(
+                                  child: Text(
+                                    '퇴근시간',
+                                    style: TextStyle(fontSize: 20),
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                  child: Container(
+                                child: Center(
+                                  child: Text(
+                                    '00 : 00',
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ))
+                            ],
                           ),
                         ),
                         Expanded(
-                            child: Container(
-                          child: Center(
-                            child: Text(
-                              '1 시간 10분',
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ))
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 120,
-                          child: Center(
-                            child: Text(
-                              '근무시간',
-                              style: TextStyle(fontSize: 20),
-                            ),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 120,
+                                child: Center(
+                                  child: Text(
+                                    '식사시간',
+                                    style: TextStyle(fontSize: 20),
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                  child: Container(
+                                child: Center(
+                                  child: Text(
+                                    '1 시간 10분',
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ))
+                            ],
                           ),
                         ),
                         Expanded(
-                            child: Container(
-                          child: Center(
-                            child: Text(
-                              '8시간 20분',
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold),
-                            ),
+                          child: Row(
+                            children: [
+                              Container(
+                                width: 120,
+                                child: Center(
+                                  child: Text(
+                                    '근무시간',
+                                    style: TextStyle(fontSize: 20),
+                                  ),
+                                ),
+                              ),
+                              Expanded(
+                                  child: Container(
+                                child: Center(
+                                  child: Text(
+                                    '8시간 20분',
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              ))
+                            ],
                           ),
-                        ))
+                        ),
                       ],
-                    ),
-                  ),
-                ],
-              ),
+                    );
+                  }),
             ),
           ],
         ),
@@ -190,6 +230,7 @@ class _MainPageState extends State<MainPage> {
                   setState(() {
                     if (_workState == WorkState.BEFORE_WORK) {
                       _workState = WorkState.WORKING;
+                      startWork();
                     } else if (_workState == WorkState.WORKING) {
                       _workState = WorkState.AFTER_WORK;
                     } else {

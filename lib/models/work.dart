@@ -1,32 +1,53 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:intl/intl.dart';
 
 class Work {
-  int id;
-  DateTime startTime;
-  DateTime endTime;
-  Duration workingTime;
-  Duration mealTime;
+  static final _now = DateTime.now();
+  static final DateTime _defaultWorkTime =
+      DateTime(_now.year, _now.month, _now.day, 0, 0, 0);
+  static final int _defaultWorkDuration = 0; // minutes
+  static final int _defaultMealDuration = 60; // minutes
+  String startTime;
+  String endTime;
+  int workingTime;
+  int mealTime;
+  bool haveMeal;
 
-  Work(this.id, this.startTime, this.endTime, this.workingTime, this.mealTime);
+  Work({
+    required this.startTime,
+    required this.endTime,
+    required this.workingTime,
+    required this.mealTime,
+    required this.haveMeal,
+  });
 
-  Work.fromSnapshot(DocumentSnapshot documentSnapshot)
-      : this.id = (documentSnapshot.data() as Map<String, dynamic>)['id'],
-        this.startTime =
-            (documentSnapshot.data() as Map<String, dynamic>)['startTime'],
-        this.endTime =
-            (documentSnapshot.data() as Map<String, dynamic>)['endTime'],
-        this.workingTime =
-            (documentSnapshot.data() as Map<String, dynamic>)['workingTime'],
-        this.mealTime =
-            (documentSnapshot.data() as Map<String, dynamic>)['mealTime'];
+  static String defaultWorkTime() {
+    return DateFormat('yyyyMMddHHmmss').format(_defaultWorkTime);
+  }
 
-  toJson() {
+  static int defaultWorkingTime() {
+    return _defaultWorkDuration;
+  }
+
+  static int defaultMealTime() {
+    return _defaultMealDuration;
+  }
+
+  Work.fromJson(Map<String, Object?> json)
+      : this(
+          startTime: json['starTime'] as String,
+          endTime: json['endTime'] as String,
+          workingTime: json['workingTime'] as int,
+          mealTime: json['mealTime'] as int,
+          haveMeal: json['haveMeal'] as bool,
+        );
+
+  Map<String, dynamic> toJson() {
     return {
-      "id": id,
       "startTime": startTime,
       "endTime": endTime,
       "workingTime": workingTime,
-      "mealTime": mealTime
+      "mealTime": mealTime,
+      "haveMeal": haveMeal,
     };
   }
 }
