@@ -20,7 +20,8 @@ class _MainPageState extends State<MainPage> {
   late WorkState _workState;
   final workRef =
       FirebaseFirestore.instance.collection('work').withConverter<Work>(
-            fromFirestore: (snapshot, _) => Work.fromJson(snapshot.data()!),
+            fromFirestore: (snapshot, _) =>
+                Work.fromJson(snapshot.data()!, snapshot.reference),
             toFirestore: (work, _) => work.toJson(),
           );
   late Work work;
@@ -42,26 +43,42 @@ class _MainPageState extends State<MainPage> {
             workingTime: Work.defaultWorkingTime(),
           ),
         )
-        .then((value) => print('저장되었습니다. $value'))
+        .then((value) => value)
         .catchError((e) {
       print(e);
     });
   }
 
-  Future<void> offWork() async {}
+  Future<void> offWork() async {
+    try {
+      work.offWork();
+      await workRef
+          .doc(work.reference!.id)
+          .update(work.toJson())
+          .then((value) => print('저장'));
+    } catch (e) {
+      Fluttertoast.showToast(
+          msg: "근무시간이 너무 짧아요",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0);
+    }
+  }
 
   Future<void> searchWork() async {
-    List<QueryDocumentSnapshot<Work>> list = await workRef
+    List<QueryDocumentSnapshot<Work>> workList = await workRef
         .where('startTime', isGreaterThanOrEqualTo: Work.defaultWorkTime())
         .get()
-        .then((snapshot) => snapshot.docs)
-        .catchError((e) {
-      print('error: $e');
-    });
-    if (list.length == 1) {
-      work = list[0].data();
+        .then((value) => value.docs);
+
+    print('갱신!');
+    if (workList.length == 1) {
+      work = workList[0].data();
     } else {
-      throw 'invalid data. check data';
+      work = Work.createDefaultWork();
     }
     _workState = work.currentWorkState();
   }
@@ -179,7 +196,7 @@ class _MainPageState extends State<MainPage> {
                                     child: Container(
                                   child: Center(
                                     child: Text(
-                                      '1 시간 10분',
+                                      work.mealTimeToString,
                                       style: TextStyle(
                                           fontSize: 20,
                                           fontWeight: FontWeight.bold),
@@ -243,6 +260,7 @@ class _MainPageState extends State<MainPage> {
                             startWork();
                           } else if (_workState == WorkState.WORKING) {
                             _workState = WorkState.AFTER_WORK;
+                            offWork();
                           } else {
                             Fluttertoast.showToast(
                                 msg: "하루에 출근은 한번만 하세요..",

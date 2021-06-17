@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:commute_app/models/workState.dart';
 import 'package:intl/intl.dart';
 
@@ -12,10 +13,12 @@ class Work {
   int workingTime;
   int mealTime;
   bool haveMeal;
+  DocumentReference? reference;
 
   get startWorkTime => DateFormat('HH : mm').format(toDateTime(startTime));
   get endWorkTime => DateFormat('HH : mm').format(toDateTime(endTime));
-  get workingTimeToString => _calculateWorkingTime();
+  get workingTimeToString => _calculateWorkingTime(workingTime);
+  get mealTimeToString => _calculateWorkingTime(mealTime);
 
   Work({
     required this.startTime,
@@ -23,8 +26,13 @@ class Work {
     required this.workingTime,
     required this.mealTime,
     required this.haveMeal,
+    this.reference,
   }) {
     print('startTime $startTime');
+    print('reference, $endTime');
+    print('reference, $workingTime');
+    print('reference, $mealTime');
+    print('reference, $reference');
   }
 
   static String defaultWorkTime() {
@@ -39,14 +47,14 @@ class Work {
     return _defaultMealDuration;
   }
 
-  Work.fromJson(Map<dynamic, Object?> json)
+  Work.fromJson(Map<dynamic, Object?> json, DocumentReference reference)
       : this(
-          startTime: json['startTime']! as String,
-          endTime: json['endTime']! as String,
-          workingTime: json['workingTime']! as int,
-          mealTime: json['mealTime']! as int,
-          haveMeal: json['haveMeal']! as bool,
-        );
+            startTime: json['startTime']! as String,
+            endTime: json['endTime']! as String,
+            workingTime: json['workingTime']! as int,
+            mealTime: json['mealTime']! as int,
+            haveMeal: json['haveMeal']! as bool,
+            reference: reference);
 
   Map<String, dynamic> toJson() {
     return {
@@ -63,6 +71,16 @@ class Work {
     return DateTime.parse(timeData);
   }
 
+  static Work createDefaultWork() {
+    return Work(
+      startTime: DateFormat('yyyyMMddHHmm').format(_defaultWorkTime),
+      endTime: DateFormat('yyyyMMddHHmm').format(_defaultWorkTime),
+      haveMeal: false,
+      mealTime: _defaultMealDuration,
+      workingTime: 0,
+    );
+  }
+
   WorkState currentWorkState() {
     var endTime = toDateTime(this.endTime);
     var startTime = toDateTime(this.startTime);
@@ -77,10 +95,35 @@ class Work {
     }
   }
 
-  String _calculateWorkingTime() {
-    if (workingTime == 0) return '계산 중';
-    var hours = workingTime ~/ 60;
-    var minutes = workingTime % 60;
+  String _calculateWorkingTime(int inMinutes) {
+    if (inMinutes == 0) return '계산 중';
+    var hours = inMinutes ~/ 60;
+    var minutes = inMinutes % 60;
     return '$hours시간 $minutes분';
+  }
+
+  void offWork() {
+    var now = DateTime.now();
+    var normalEndTime = now.subtract(Duration(minutes: _defaultMealDuration));
+    if (haveMeal) {
+      var workingTimeToDuraion = normalEndTime
+          .add(Duration(minutes: mealTime))
+          .difference(toDateTime(startTime));
+      if (workingTimeToDuraion.isNegative) {
+        throw 'dont offWork';
+      } else {
+        endTime = DateFormat("yyyyMMddHHmm").format(now);
+        workingTime = workingTimeToDuraion.inMinutes;
+      }
+    } else {
+      var workingTimeToDuraion =
+          normalEndTime.difference(toDateTime(startTime));
+      if (workingTimeToDuraion.isNegative) {
+        throw 'dont offWork';
+      } else {
+        endTime = DateFormat("yyyyMMddHHmm").format(now);
+        workingTime = workingTimeToDuraion.inMinutes;
+      }
+    }
   }
 }
