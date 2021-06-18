@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:commute_app/constants.dart';
 import 'package:commute_app/models/work.dart';
+import 'package:commute_app/models/workState.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
@@ -20,14 +21,17 @@ class WorkingBar extends StatefulWidget {
 
 class _WorkingBarState extends State<WorkingBar> {
   double percent = 0.0;
-  TimeOfDay _timeOfDay = TimeOfDay.now();
 
   @override
   void initState() {
     super.initState();
 
     Future.delayed(Duration(milliseconds: 100), () {
-      calculatePercent();
+      if (widget.work.currentWorkState() == WorkState.WORKING) {
+        calculatePercent();
+      } else {
+        percent = 0.0;
+      }
     });
   }
 

@@ -4,6 +4,7 @@ import 'package:commute_app/pages/mainPage.dart';
 import 'package:commute_app/pages/weeklyWorkPage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -51,6 +52,7 @@ class _HomePageState extends State<HomePage>
               elevation: 0,
               title: Text('Work App'),
               centerTitle: true,
+              brightness: Brightness.dark,
             ),
             bottomNavigationBar: BottomNavigationBar(
               items: const <BottomNavigationBarItem>[
