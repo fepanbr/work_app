@@ -1,12 +1,47 @@
+import 'dart:async';
+
 import 'package:commute_app/constants.dart';
+import 'package:commute_app/models/work.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 
-class WorkingBar extends StatelessWidget {
+class WorkingBar extends StatefulWidget {
   const WorkingBar({
     Key? key,
+    required this.work,
   }) : super(key: key);
+
+  final Work work;
+
+  @override
+  _WorkingBarState createState() => _WorkingBarState();
+}
+
+class _WorkingBarState extends State<WorkingBar> {
+  double percent = 0.0;
+  TimeOfDay _timeOfDay = TimeOfDay.now();
+
+  @override
+  void initState() {
+    super.initState();
+
+    Future.delayed(Duration(milliseconds: 100), () {
+      calculatePercent();
+    });
+  }
+
+  void calculatePercent() {
+    Duration workingTime =
+        DateTime.now().difference(Work.toDateTime(widget.work.startTime));
+    setState(() {
+      if ((480 - workingTime.inMinutes) / 480 >= 1.0) {
+        percent = 1.0;
+      } else {
+        percent = (480 - workingTime.inMinutes) / 480;
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,23 +54,33 @@ class WorkingBar extends StatelessWidget {
             height: 50,
             child: Row(
               children: [
-                SizedBox(
-                  width: (Get.width - 50) * 0.9,
+                AnimatedContainer(
+                  duration: Duration(seconds: 1),
+                  width: (Get.width - 50) * percent,
+                  child: SizedBox(
+                    width: (Get.width - 50) * percent,
+                  ),
                 ),
                 Icon(
                   Icons.directions_run_outlined,
-                  size: 50,
+                  size: 40,
                   color: kTextColor,
                 ),
               ],
             ),
           ),
-          new LinearPercentIndicator(
-            lineHeight: 10.0,
-            // percent: _value.restTime,
-            linearStrokeCap: LinearStrokeCap.roundAll,
-            progressColor: kPrimaryColor,
-            percent: 0.9,
+          InkWell(
+            onTap: () {
+              calculatePercent();
+            },
+            child: new LinearPercentIndicator(
+              lineHeight: 10.0,
+              animationDuration: 1000,
+              animation: true,
+              linearStrokeCap: LinearStrokeCap.roundAll,
+              progressColor: kPrimaryColor,
+              percent: percent,
+            ),
           ),
         ],
       ),

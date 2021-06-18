@@ -1,5 +1,9 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:commute_app/components/backgroundBlueBox.dart';
 import 'package:commute_app/components/workingBar.dart';
+import 'package:commute_app/components/worktimeCard.dart';
 import 'package:commute_app/constants.dart';
 import 'package:commute_app/models/work.dart';
 import 'package:commute_app/models/workState.dart';
@@ -25,11 +29,18 @@ class _MainPageState extends State<MainPage> {
             toFirestore: (work, _) => work.toJson(),
           );
   late Work work;
+  String workingMsg = '';
+
+  String _getWorkingTime(Duration duration) {
+    var hours = duration.inMinutes ~/ 60;
+    var minutes = duration.inMinutes % 60;
+    return '$hours시간 $minutes분 근무 중!';
+  }
 
   @override
   void initState() {
     super.initState();
-    searchWork();
+    setWork();
   }
 
   Future<void> startWork() async {
@@ -68,7 +79,7 @@ class _MainPageState extends State<MainPage> {
     }
   }
 
-  Future<void> searchWork() async {
+  Future<void> setWork() async {
     List<QueryDocumentSnapshot<Work>> workList = await workRef
         .where('startTime', isGreaterThanOrEqualTo: Work.defaultWorkTime())
         .get()
@@ -81,171 +92,34 @@ class _MainPageState extends State<MainPage> {
       work = Work.createDefaultWork();
     }
     _workState = work.currentWorkState();
+    if (work.currentWorkState() == WorkState.WORKING) {
+      Duration workingTime =
+          DateTime.now().difference(Work.toDateTime(work.startTime));
+      workingMsg = _getWorkingTime(workingTime);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: searchWork(),
+      future: setWork(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           return Column(
             children: [
               Stack(
-                children: [
-                  Container(
-                    height: 200,
-                    decoration: BoxDecoration(
-                      color: kBackgroundColor,
-                    ),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: kPrimaryColor,
-                        borderRadius: BorderRadius.only(
-                          bottomLeft: Radius.circular(40),
-                          bottomRight: Radius.circular(40),
-                        ),
-                      ),
-                    ),
-                  ),
-                  Container(
-                      margin: EdgeInsets.fromLTRB(kDefaultPadding, 50,
-                          kDefaultPadding, kDefaultPadding / 2),
-                      height: 250,
-                      decoration: BoxDecoration(
-                          color: kBackgroundColor,
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(16),
-                          ),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.5),
-                              spreadRadius: 5,
-                              blurRadius: 7,
-                              offset:
-                                  Offset(0, 3), // changes position of shadow
-                            ),
-                          ]),
-                      child: Column(
-                        children: [
-                          Expanded(
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 120,
-                                  child: Center(
-                                    child: Text(
-                                      '출근시간',
-                                      style: TextStyle(fontSize: 20),
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                    child: Container(
-                                  child: Center(
-                                    child: Text(
-                                      work.startWorkTime,
-                                      style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  ),
-                                ))
-                              ],
-                            ),
-                          ),
-                          Expanded(
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 120,
-                                  child: Center(
-                                    child: Text(
-                                      '퇴근시간',
-                                      style: TextStyle(fontSize: 20),
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                    child: Container(
-                                  child: Center(
-                                    child: Text(
-                                      work.endWorkTime,
-                                      style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  ),
-                                ))
-                              ],
-                            ),
-                          ),
-                          Expanded(
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 120,
-                                  child: Center(
-                                    child: Text(
-                                      '식사시간',
-                                      style: TextStyle(fontSize: 20),
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                    child: Container(
-                                  child: Center(
-                                    child: Text(
-                                      work.mealTimeToString,
-                                      style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  ),
-                                ))
-                              ],
-                            ),
-                          ),
-                          Expanded(
-                            child: Row(
-                              children: [
-                                Container(
-                                  width: 120,
-                                  child: Center(
-                                    child: Text(
-                                      '근무시간',
-                                      style: TextStyle(fontSize: 20),
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                    child: Container(
-                                  child: Center(
-                                    child: Text(
-                                      work.workingTimeToString,
-                                      style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                  ),
-                                ))
-                              ],
-                            ),
-                          ),
-                        ],
-                      ))
-                ],
+                children: [BackgroundBlueBox(), WorkTimeCard(work: work)],
               ),
               SizedBox(
                 height: 30,
               ),
-              WorkingBar(),
+              WorkingBar(work: work),
               Expanded(
                 child: Column(
                   children: [
                     Container(
                       child: Text(
-                        '8시간 50분 근무중!',
+                        workingMsg,
                         style: TextStyle(fontSize: 16),
                       ),
                     ),
@@ -291,7 +165,7 @@ class _MainPageState extends State<MainPage> {
             ],
           );
         } else {
-          return CircularProgressIndicator();
+          return Center(child: CircularProgressIndicator());
         }
       },
     );
