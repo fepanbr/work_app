@@ -27,24 +27,26 @@ class _WorkingBarState extends State<WorkingBar> {
     super.initState();
 
     Future.delayed(Duration(milliseconds: 100), () {
-      if (widget.work.currentWorkState() == WorkState.WORKING) {
-        calculatePercent();
-      } else {
-        percent = 0.0;
-      }
+      calculatePercent();
     });
   }
 
   void calculatePercent() {
-    Duration workingTime =
-        DateTime.now().difference(Work.toDateTime(widget.work.startTime));
-    setState(() {
-      if ((480 - workingTime.inMinutes) / 480 >= 1.0) {
-        percent = 1.0;
-      } else {
-        percent = (480 - workingTime.inMinutes) / 480;
-      }
-    });
+    if (widget.work.currentWorkState() == WorkState.WORKING) {
+      Duration workingTime =
+          DateTime.now().difference(Work.toDateTime(widget.work.startTime));
+      print(
+          'duration: ${workingTime.inMinutes}, ${widget.work.startTime}, ${workingTime.isNegative}');
+      setState(() {
+        if (workingTime.inMinutes / 480 >= 1.0) {
+          percent = 1.0;
+        } else {
+          percent = workingTime.inMinutes / 480;
+        }
+      });
+    } else {
+      percent = 0.0;
+    }
   }
 
   @override
@@ -61,9 +63,9 @@ class _WorkingBarState extends State<WorkingBar> {
                 AnimatedContainer(
                   duration: Duration(seconds: 1),
                   width: (Get.width - 50) * percent,
-                  child: SizedBox(
-                    width: (Get.width - 50) * percent,
-                  ),
+                  // child: SizedBox(
+                  //   width: (Get.width - 50) * percent,
+                  // ),
                 ),
                 Icon(
                   Icons.directions_run_outlined,

@@ -102,6 +102,10 @@ class Work {
     return '$hours시간 $minutes분';
   }
 
+  static DateTime findFirstDateOfTheWeek(DateTime dateTime) {
+    return dateTime.subtract(Duration(days: dateTime.weekday - 1));
+  }
+
   void offWork() {
     var now = DateTime.now();
     var normalEndTime = now.subtract(Duration(minutes: _defaultMealDuration));
