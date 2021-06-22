@@ -32,11 +32,11 @@ class _WeeklyWorkPageState extends State<WeeklyWorkPage> {
   }
 
   Future<void> setWork() async {
-    var monday = Work.findFirstDateOfTheWeek(now);
+    var startTime = DateFormat("yyyyMMddHHmm").format(Work.monday);
+    var endTime = DateFormat("yyyyMMddHHmm").format(Work.friday);
     List<QueryDocumentSnapshot<Work>> workListInServer = await workRef
-        .where('startTime',
-            isGreaterThanOrEqualTo: DateFormat("yyyyMMddHHmm").format(monday))
-        .where('startTime', isLessThanOrEqualTo: Work.defaultWorkTime())
+        .where('startTime', isGreaterThanOrEqualTo: startTime)
+        .where('startTime', isLessThanOrEqualTo: endTime)
         .get()
         .then((value) => value.docs);
 

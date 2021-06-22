@@ -4,8 +4,23 @@ import 'package:intl/intl.dart';
 
 class Work {
   static final _now = DateTime.now();
+  static final friday = DateTime(
+      findLastDateOfTheWeek(_now).year,
+      findLastDateOfTheWeek(_now).month,
+      findLastDateOfTheWeek(_now).day,
+      23,
+      59,
+      59);
+  static final monday = DateTime(
+      findFirstDateOfTheWeek(_now).year,
+      findFirstDateOfTheWeek(_now).month,
+      findFirstDateOfTheWeek(_now).day,
+      0,
+      0,
+      0);
   static final DateTime _defaultWorkTime =
       DateTime(_now.year, _now.month, _now.day, 0, 0, 0);
+  // static final DateTime _defaultEndTime = findLastDateOfTheWeek(_now);
   static final int _defaultWorkDuration = 0; // minutes
   static final int _defaultMealDuration = 60; // minutes
   String startTime;
@@ -38,6 +53,10 @@ class Work {
   static String defaultWorkTime() {
     return DateFormat('yyyyMMddHHmm').format(_defaultWorkTime);
   }
+
+  // static String defaultEndTime() {
+  //   return DateFormat('yyyyMMddHHmm').format(_defaultEndTime);
+  // }
 
   static int defaultWorkingTime() {
     return _defaultWorkDuration;
@@ -104,6 +123,10 @@ class Work {
 
   static DateTime findFirstDateOfTheWeek(DateTime dateTime) {
     return dateTime.subtract(Duration(days: dateTime.weekday - 1));
+  }
+
+  static DateTime findLastDateOfTheWeek(DateTime dateTime) {
+    return dateTime.add(Duration(days: 5 - dateTime.weekday));
   }
 
   void offWork() {
