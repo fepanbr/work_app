@@ -123,16 +123,24 @@ class _MainPageState extends State<MainPage> {
               Stack(
                 children: [
                   BackgroundBlueBox(),
-                  InkWell(
-                      child: WorkTimeCard(work: work),
-                      onTap: () async {
-                        await Get.toNamed('/modify');
-                      }),
+                  WorkTimeCard(work: work),
                   Positioned(
                     right: kDefaultPadding,
                     top: kDefaultPadding / 2,
                     child: InkWell(
                       onTap: () async {
+                        if (work.currentWorkState() == WorkState.AFTER_WORK) {
+                          Fluttertoast.showToast(
+                              msg: "퇴근 후에는 설정할 수 없습니다.",
+                              toastLength: Toast.LENGTH_SHORT,
+                              gravity: ToastGravity.CENTER,
+                              timeInSecForIosWeb: 1,
+                              backgroundColor: Colors.red,
+                              textColor: Colors.white,
+                              fontSize: 16.0);
+                          return;
+                        }
+
                         var result = await showDialog(
                           context: context,
                           builder: (context) => AlertDialog(

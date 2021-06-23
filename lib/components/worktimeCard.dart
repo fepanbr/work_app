@@ -2,6 +2,7 @@ import 'package:commute_app/constants.dart';
 import 'package:commute_app/models/annualLeave.dart';
 import 'package:commute_app/models/work.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 class WorkTimeCard extends StatefulWidget {
   const WorkTimeCard({
@@ -43,169 +44,176 @@ class _WorkTimeCardState extends State<WorkTimeCard> {
                   style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
                 ),
               )
-            : Column(
-                children: [
-                  Expanded(
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 120,
-                          height: 50,
-                          child: Center(
-                            child: Text(
-                              '출근시간',
-                              style: TextStyle(fontSize: 20),
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Container(
+            : InkWell(
+                onTap: () {
+                  Get.toNamed('/modify', arguments: widget.work);
+                },
+                child: Column(
+                  children: [
+                    Expanded(
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 120,
                             height: 50,
                             child: Center(
                               child: Text(
-                                widget.work.startWorkTime,
+                                '출근시간',
+                                style: TextStyle(fontSize: 20),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Container(
+                              height: 50,
+                              child: Center(
+                                child: Text(
+                                  widget.work.startWorkTime,
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 120,
+                            child: Center(
+                              child: Text(
+                                '퇴근시간',
+                                style: TextStyle(fontSize: 20),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                              child: Container(
+                            child: Center(
+                              child: Text(
+                                widget.work.endWorkTime,
                                 style: TextStyle(
                                     fontSize: 20, fontWeight: FontWeight.bold),
                               ),
                             ),
-                          ),
-                        )
-                      ],
+                          ))
+                        ],
+                      ),
                     ),
-                  ),
-                  Expanded(
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 120,
-                          child: Center(
-                            child: Text(
-                              '퇴근시간',
-                              style: TextStyle(fontSize: 20),
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                            child: Container(
-                          child: Center(
-                            child: Text(
-                              widget.work.endWorkTime,
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ))
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 120,
-                          child: Center(
-                            child: Text(
-                              '식사시간',
-                              style: TextStyle(fontSize: 20),
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                            child: Container(
-                          child: Center(
-                            child: Text(
-                              widget.work.mealTimeToString,
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ))
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 120,
-                          child: Center(
-                            child: Text(
-                              '근무시간',
-                              style: TextStyle(fontSize: 20),
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                            child: Container(
-                          child: Center(
-                            child: Text(
-                              widget.work.workingTimeToString,
-                              style: TextStyle(
-                                  fontSize: 20, fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ))
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 120,
-                          child: Center(
-                            child: Text(
-                              '식사포함',
-                              style: TextStyle(fontSize: 20),
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Container(
+                    Expanded(
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 120,
                             child: Center(
-                              child: Switch(
-                                value: widget.work.haveMeal,
-                                onChanged: (value) {
-                                  setState(() {
-                                    widget.work.haveMeal = value;
-                                  });
-                                },
+                              child: Text(
+                                '식사시간',
+                                style: TextStyle(fontSize: 20),
                               ),
                             ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 120,
-                          height: 50,
-                          child: Center(
-                            child: Text(
-                              '연 차',
-                              style: TextStyle(fontSize: 20),
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Container(
-                            height: 50,
+                          Expanded(
+                              child: Container(
                             child: Center(
                               child: Text(
-                                widget.work.onLeaveText,
+                                widget.work.mealTimeToString,
                                 style: TextStyle(
                                     fontSize: 20, fontWeight: FontWeight.bold),
                               ),
                             ),
-                          ),
-                        )
-                      ],
+                          ))
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                    Expanded(
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 120,
+                            child: Center(
+                              child: Text(
+                                '근무시간',
+                                style: TextStyle(fontSize: 20),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                              child: Container(
+                            child: Center(
+                              child: Text(
+                                widget.work.workingTimeToString,
+                                style: TextStyle(
+                                    fontSize: 20, fontWeight: FontWeight.bold),
+                              ),
+                            ),
+                          ))
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 120,
+                            child: Center(
+                              child: Text(
+                                '식사포함',
+                                style: TextStyle(fontSize: 20),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Container(
+                              child: Center(
+                                child: Switch(
+                                  value: widget.work.haveMeal,
+                                  onChanged: (value) {
+                                    setState(() {
+                                      widget.work.haveMeal = value;
+                                    });
+                                  },
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: Row(
+                        children: [
+                          Container(
+                            width: 120,
+                            height: 50,
+                            child: Center(
+                              child: Text(
+                                '연 차',
+                                style: TextStyle(fontSize: 20),
+                              ),
+                            ),
+                          ),
+                          Expanded(
+                            child: Container(
+                              height: 50,
+                              child: Center(
+                                child: Text(
+                                  widget.work.onLeaveText,
+                                  style: TextStyle(
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              ),
+                            ),
+                          )
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ));
   }
 }
