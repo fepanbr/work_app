@@ -5,10 +5,12 @@ import 'package:commute_app/components/backgroundBlueBox.dart';
 import 'package:commute_app/components/workingBar.dart';
 import 'package:commute_app/components/worktimeCard.dart';
 import 'package:commute_app/constants.dart';
+import 'package:commute_app/models/annualLeave.dart';
 import 'package:commute_app/models/work.dart';
 import 'package:commute_app/models/workState.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class MainPage extends StatefulWidget {
@@ -52,6 +54,7 @@ class _MainPageState extends State<MainPage> {
             haveMeal: false,
             mealTime: Work.defaultMealTime(),
             workingTime: Work.defaultWorkingTime(),
+            annualLeave: AnnualLeave.NONE.index,
           ),
         )
         .then((value) => value)
@@ -85,7 +88,6 @@ class _MainPageState extends State<MainPage> {
         .get()
         .then((value) => value.docs);
 
-    print('갱신!');
     if (workList.length == 1) {
       work = workList[0].data();
     } else {
@@ -96,7 +98,18 @@ class _MainPageState extends State<MainPage> {
       Duration workingTime =
           DateTime.now().difference(Work.toDateTime(work.startTime));
       workingMsg = _getWorkingTime(workingTime);
+    } else if (work.currentWorkState() == WorkState.AFTER_WORK) {
+      workingMsg = '';
     }
+  }
+
+  Future<void> setOnLeave() async {
+    await workRef
+        .add(Work.createOnLeaveWork())
+        .then((value) => value)
+        .catchError((e) {
+      print(e);
+    });
   }
 
   @override
@@ -108,7 +121,67 @@ class _MainPageState extends State<MainPage> {
           return Column(
             children: [
               Stack(
-                children: [BackgroundBlueBox(), WorkTimeCard(work: work)],
+                children: [
+                  BackgroundBlueBox(),
+                  InkWell(
+                      child: WorkTimeCard(work: work),
+                      onTap: () async {
+                        await Get.toNamed('/modify');
+                      }),
+                  Positioned(
+                    right: kDefaultPadding,
+                    top: kDefaultPadding / 2,
+                    child: InkWell(
+                      onTap: () async {
+                        var result = await showDialog(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: Text('휴일 선택'),
+                            content: Text('연차입니까, 반차입니까?'),
+                            actions: [
+                              ElevatedButton(
+                                onPressed: () {
+                                  setState(() {
+                                    work.annualLeave = AnnualLeave.NONE.index;
+                                  });
+                                  Navigator.pop(context, "none");
+                                },
+                                child: Text('근무'),
+                              ),
+                              ElevatedButton(
+                                onPressed: () {
+                                  setState(() {
+                                    work.annualLeave =
+                                        AnnualLeave.ONLEAVE.index;
+                                  });
+                                  Navigator.pop(context, "onleave");
+                                },
+                                child: Text('연차'),
+                              ),
+                              ElevatedButton(
+                                onPressed: () {
+                                  setState(() {
+                                    work.annualLeave =
+                                        AnnualLeave.HALFONLEAVE.index;
+                                  });
+                                  Navigator.pop(context, "halfonleave");
+                                },
+                                child: Text('반차'),
+                              ),
+                            ],
+                          ),
+                        );
+                        if (result == 'onleave') {
+                          setOnLeave();
+                        }
+                      },
+                      child: Icon(
+                        Icons.settings,
+                        color: kBackgroundColor,
+                      ),
+                    ),
+                  ),
+                ],
               ),
               SizedBox(
                 height: 30,
@@ -158,7 +231,7 @@ class _MainPageState extends State<MainPage> {
                           elevation: MaterialStateProperty.all(3),
                           backgroundColor:
                               MaterialStateProperty.all(kPrimaryColor)),
-                    )
+                    ),
                   ],
                 ),
               ),

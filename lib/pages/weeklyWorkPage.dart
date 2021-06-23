@@ -1,11 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:commute_app/components/backgroundBlueBox.dart';
 import 'package:commute_app/components/weeklyWorkCard.dart';
-import 'package:commute_app/components/worktimeCard.dart';
 import 'package:commute_app/constants.dart';
 import 'package:commute_app/models/work.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class WeeklyWorkPage extends StatefulWidget {
@@ -24,12 +22,6 @@ class _WeeklyWorkPageState extends State<WeeklyWorkPage> {
           );
   List<Work> workList = [];
   final now = DateTime.now();
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-  }
 
   Future<void> setWork() async {
     var startTime = DateFormat("yyyyMMddHHmm").format(Work.monday);
@@ -67,7 +59,7 @@ class _WeeklyWorkPageState extends State<WeeklyWorkPage> {
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.done) {
                     return Container(
-                      height: 310,
+                      height: 360,
                       child: ListView.builder(
                         itemBuilder: (context, index) {
                           return Container(

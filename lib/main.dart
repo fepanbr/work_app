@@ -1,6 +1,7 @@
 import 'package:commute_app/constants.dart';
 import 'package:commute_app/homePage.dart';
 import 'package:commute_app/pages/loginPage.dart';
+import 'package:commute_app/pages/modifyPage.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -38,6 +39,7 @@ class MyApp extends StatelessWidget {
             getPages: [
               GetPage(name: '/', page: () => HomePage()),
               GetPage(name: '/login', page: () => LoginPage()),
+              GetPage(name: '/modify', page: () => ModifyPage()),
             ],
           );
         } else {

@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:commute_app/constants.dart';
+import 'package:commute_app/models/annualLeave.dart';
 import 'package:commute_app/models/work.dart';
 import 'package:commute_app/models/workState.dart';
 import 'package:flutter/material.dart';
@@ -38,10 +39,20 @@ class _WorkingBarState extends State<WorkingBar> {
       print(
           'duration: ${workingTime.inMinutes}, ${widget.work.startTime}, ${workingTime.isNegative}');
       setState(() {
-        if (workingTime.inMinutes / 480 >= 1.0) {
+        if (widget.work.annualLeave == AnnualLeave.HALFONLEAVE.index) {
+          if (workingTime.inMinutes / 240 >= 1.0) {
+            percent = 1.0;
+          } else {
+            percent = workingTime.inMinutes / 240;
+          }
+        } else if (widget.work.annualLeave == AnnualLeave.ONLEAVE.index) {
           percent = 1.0;
         } else {
-          percent = workingTime.inMinutes / 480;
+          if (workingTime.inMinutes / 480 >= 1.0) {
+            percent = 1.0;
+          } else {
+            percent = workingTime.inMinutes / 480;
+          }
         }
       });
     } else {

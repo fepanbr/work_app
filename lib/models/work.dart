@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:commute_app/models/annualLeave.dart';
 import 'package:commute_app/models/workState.dart';
 import 'package:intl/intl.dart';
 
@@ -28,12 +29,16 @@ class Work {
   int workingTime;
   int mealTime;
   bool haveMeal;
+  int annualLeave;
   DocumentReference? reference;
 
-  get startWorkTime => DateFormat('HH : mm').format(toDateTime(startTime));
-  get endWorkTime => DateFormat('HH : mm').format(toDateTime(endTime));
-  get workingTimeToString => _calculateWorkingTime(workingTime);
-  get mealTimeToString => _calculateWorkingTime(mealTime);
+  String get startWorkTime =>
+      DateFormat('HH : mm').format(toDateTime(startTime));
+  String get endWorkTime => DateFormat('HH : mm').format(toDateTime(endTime));
+  String get workingTimeToString => _calculateWorkingTime(workingTime);
+  String get mealTimeToString => _calculateWorkingTime(mealTime);
+  String get workDate => DateFormat('d일').format(toDateTime(startTime));
+  String get onLeaveText => _makeOnLeaveText();
 
   Work({
     required this.startTime,
@@ -41,6 +46,7 @@ class Work {
     required this.workingTime,
     required this.mealTime,
     required this.haveMeal,
+    required this.annualLeave,
     this.reference,
   }) {
     print('startTime $startTime');
@@ -73,6 +79,7 @@ class Work {
             workingTime: json['workingTime']! as int,
             mealTime: json['mealTime']! as int,
             haveMeal: json['haveMeal']! as bool,
+            annualLeave: json['annualLeave']! as int,
             reference: reference);
 
   Map<String, dynamic> toJson() {
@@ -92,11 +99,22 @@ class Work {
 
   static Work createDefaultWork() {
     return Work(
-      startTime: DateFormat('yyyyMMddHHmm').format(_defaultWorkTime),
-      endTime: DateFormat('yyyyMMddHHmm').format(_defaultWorkTime),
+        startTime: DateFormat('yyyyMMddHHmm').format(_defaultWorkTime),
+        endTime: DateFormat('yyyyMMddHHmm').format(_defaultWorkTime),
+        haveMeal: false,
+        mealTime: _defaultMealDuration,
+        workingTime: 0,
+        annualLeave: AnnualLeave.NONE.index);
+  }
+
+  static Work createOnLeaveWork() {
+    return Work(
+      startTime: Work.defaultWorkTime(),
+      endTime: Work.defaultWorkTime(),
       haveMeal: false,
-      mealTime: _defaultMealDuration,
-      workingTime: 0,
+      mealTime: Work.defaultMealTime(),
+      workingTime: Work.defaultWorkingTime(),
+      annualLeave: AnnualLeave.ONLEAVE.index,
     );
   }
 
@@ -152,5 +170,27 @@ class Work {
         workingTime = workingTimeToDuraion.inMinutes;
       }
     }
+  }
+
+  String _makeOnLeaveText() {
+    late String onLeaveText;
+    switch (annualLeave) {
+      case 0:
+        {
+          onLeaveText = '근 무';
+          break;
+        }
+      case 1:
+        {
+          onLeaveText = '연 차';
+          break;
+        }
+      case 2:
+        {
+          onLeaveText = '반 차';
+          break;
+        }
+    }
+    return onLeaveText;
   }
 }
