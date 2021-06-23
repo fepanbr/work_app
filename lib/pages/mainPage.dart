@@ -51,7 +51,7 @@ class _MainPageState extends State<MainPage> {
           Work(
             startTime: DateFormat("yyyyMMddHHmm").format(DateTime.now()),
             endTime: Work.defaultWorkTime(),
-            haveMeal: false,
+            isAddMealTime: false,
             mealTime: Work.defaultMealTime(),
             workingTime: Work.defaultWorkingTime(),
             annualLeave: AnnualLeave.NONE.index,
@@ -65,6 +65,7 @@ class _MainPageState extends State<MainPage> {
 
   Future<void> offWork() async {
     try {
+      if (!work.isValidWorkTime()) throw 'don\'t calculate workingTime';
       work.offWork();
       await workRef
           .doc(work.reference!.id)

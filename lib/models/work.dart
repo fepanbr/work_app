@@ -28,7 +28,7 @@ class Work {
   String endTime;
   int workingTime;
   int mealTime;
-  bool haveMeal;
+  bool isAddMealTime;
   int annualLeave;
   DocumentReference? reference;
 
@@ -45,7 +45,7 @@ class Work {
     required this.endTime,
     required this.workingTime,
     required this.mealTime,
-    required this.haveMeal,
+    required this.isAddMealTime,
     required this.annualLeave,
     this.reference,
   }) {
@@ -78,7 +78,7 @@ class Work {
             endTime: json['endTime']! as String,
             workingTime: json['workingTime']! as int,
             mealTime: json['mealTime']! as int,
-            haveMeal: json['haveMeal']! as bool,
+            isAddMealTime: json['isAddMealTime']! as bool,
             annualLeave: json['annualLeave']! as int,
             reference: reference);
 
@@ -88,7 +88,7 @@ class Work {
       "endTime": endTime,
       "workingTime": workingTime,
       "mealTime": mealTime,
-      "haveMeal": haveMeal,
+      "isAddMealTime": isAddMealTime,
     };
   }
 
@@ -101,7 +101,7 @@ class Work {
     return Work(
         startTime: DateFormat('yyyyMMddHHmm').format(_defaultWorkTime),
         endTime: DateFormat('yyyyMMddHHmm').format(_defaultWorkTime),
-        haveMeal: false,
+        isAddMealTime: false,
         mealTime: _defaultMealDuration,
         workingTime: 0,
         annualLeave: AnnualLeave.NONE.index);
@@ -111,7 +111,7 @@ class Work {
     return Work(
       startTime: Work.defaultWorkTime(),
       endTime: Work.defaultWorkTime(),
-      haveMeal: false,
+      isAddMealTime: false,
       mealTime: Work.defaultMealTime(),
       workingTime: Work.defaultWorkingTime(),
       annualLeave: AnnualLeave.ONLEAVE.index,
@@ -150,7 +150,7 @@ class Work {
   void offWork() {
     var now = DateTime.now();
     var normalEndTime = now.subtract(Duration(minutes: _defaultMealDuration));
-    if (haveMeal) {
+    if (isAddMealTime) {
       var workingTimeToDuraion = normalEndTime
           .add(Duration(minutes: mealTime))
           .difference(toDateTime(startTime));
@@ -192,5 +192,23 @@ class Work {
         }
     }
     return onLeaveText;
+  }
+
+  bool isValidWorkTime() {
+    var workingTime;
+    if (annualLeave == AnnualLeave.NONE.index) {
+      if (isAddMealTime) {
+        workingTime = _now
+            .add(Duration(minutes: mealTime - _defaultMealDuration))
+            .difference(toDateTime(startTime));
+      } else {
+        workingTime = _now
+            .subtract(Duration(minutes: _defaultMealDuration))
+            .difference(toDateTime(startTime));
+      }
+    } else if (annualLeave == AnnualLeave.HALFONLEAVE.index) {
+      workingTime = _now.difference(toDateTime(startTime));
+    }
+    return !workingTime.isNegative;
   }
 }

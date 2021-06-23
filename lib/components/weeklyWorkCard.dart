@@ -136,7 +136,7 @@ class WeeklyWorkCard extends StatelessWidget {
                     height: 50,
                     child: Center(
                       child: Text(
-                        work.haveMeal ? '포함' : '미포함',
+                        work.isAddMealTime ? '포함' : '미포함',
                         style: TextStyle(
                             fontSize: 20, fontWeight: FontWeight.bold),
                       ),

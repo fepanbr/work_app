@@ -170,10 +170,10 @@ class _WorkTimeCardState extends State<WorkTimeCard> {
                             child: Container(
                               child: Center(
                                 child: Switch(
-                                  value: widget.work.haveMeal,
+                                  value: widget.work.isAddMealTime,
                                   onChanged: (value) {
                                     setState(() {
-                                      widget.work.haveMeal = value;
+                                      widget.work.isAddMealTime = value;
                                     });
                                   },
                                 ),
