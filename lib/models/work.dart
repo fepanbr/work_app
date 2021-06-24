@@ -89,6 +89,7 @@ class Work {
       "workingTime": workingTime,
       "mealTime": mealTime,
       "isAddMealTime": isAddMealTime,
+      "annualLeave": annualLeave,
     };
   }
 
