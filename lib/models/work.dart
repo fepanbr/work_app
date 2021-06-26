@@ -39,6 +39,7 @@ class Work {
   String get mealTimeToString => _calculateWorkingTime(mealTime);
   String get workDate => DateFormat('d일').format(toDateTime(startTime));
   String get onLeaveText => _makeOnLeaveText();
+  String get weekDayToString => _dayOfWeekToString();
 
   Work({
     required this.startTime,
@@ -173,6 +174,45 @@ class Work {
     }
   }
 
+  calculateWorkingTime() {
+    if (annualLeave == AnnualLeave.ONLEAVE.index) {
+      var startTimeToDate = toDateTime(startTime);
+      startTime = DateFormat("yyyyMMddHHmm").format(DateTime(
+          startTimeToDate.year,
+          startTimeToDate.month,
+          startTimeToDate.day,
+          0,
+          0,
+          0));
+      endTime = DateFormat("yyyyMMddHHmm").format(DateTime(startTimeToDate.year,
+          startTimeToDate.month, startTimeToDate.day, 0, 0, 0));
+      mealTime = defaultMealTime();
+      isAddMealTime = false;
+      workingTime = 0;
+    } else {
+      var normalEndTime =
+          toDateTime(endTime).subtract(Duration(minutes: mealTime));
+      if (isAddMealTime) {
+        var workingTimeToDuraion = normalEndTime
+            .add(Duration(minutes: mealTime))
+            .difference(toDateTime(startTime));
+        if (workingTimeToDuraion.isNegative) {
+          throw 'dont offWork';
+        } else {
+          workingTime = workingTimeToDuraion.inMinutes;
+        }
+      } else {
+        var workingTimeToDuraion =
+            normalEndTime.difference(toDateTime(startTime));
+        if (workingTimeToDuraion.isNegative) {
+          throw 'dont offWork';
+        } else {
+          workingTime = workingTimeToDuraion.inMinutes;
+        }
+      }
+    }
+  }
+
   String _makeOnLeaveText() {
     late String onLeaveText;
     switch (annualLeave) {
@@ -211,5 +251,26 @@ class Work {
       workingTime = _now.difference(toDateTime(startTime));
     }
     return !workingTime.isNegative;
+  }
+
+  String _dayOfWeekToString() {
+    var dayOfWeek = toDateTime(startTime).weekday;
+    if (dayOfWeek == 1) {
+      return '월';
+    } else if (dayOfWeek == 2) {
+      return '화';
+    } else if (dayOfWeek == 3) {
+      return '수';
+    } else if (dayOfWeek == 4) {
+      return '목';
+    } else if (dayOfWeek == 5) {
+      return '금';
+    } else if (dayOfWeek == 6) {
+      return '토';
+    } else if (dayOfWeek == 7) {
+      return '일';
+    } else {
+      throw 'no valid parameters dayOfWeek';
+    }
   }
 }

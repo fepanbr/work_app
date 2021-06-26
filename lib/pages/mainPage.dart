@@ -10,7 +10,6 @@ import 'package:commute_app/models/work.dart';
 import 'package:commute_app/models/workState.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 class MainPage extends StatefulWidget {
@@ -113,6 +112,24 @@ class _MainPageState extends State<MainPage> {
     });
   }
 
+  Future<void> updateWork() async {
+    if (work.reference != null) {
+      await workRef
+          .doc(work.reference!.id)
+          .update(work.toJson())
+          .then((value) => print('저장'));
+    } else {
+      Fluttertoast.showToast(
+          msg: "수정은 출근, 연차 지정 후 사용할 수 있습니다.",
+          toastLength: Toast.LENGTH_SHORT,
+          gravity: ToastGravity.CENTER,
+          timeInSecForIosWeb: 1,
+          backgroundColor: Colors.red,
+          textColor: Colors.white,
+          fontSize: 16.0);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
@@ -124,7 +141,10 @@ class _MainPageState extends State<MainPage> {
               Stack(
                 children: [
                   BackgroundBlueBox(),
-                  WorkTimeCard(work: work),
+                  WorkTimeCard(
+                    work: work,
+                    updateWork: updateWork,
+                  ),
                   Positioned(
                     right: kDefaultPadding,
                     top: kDefaultPadding / 2,

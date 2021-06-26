@@ -41,6 +41,7 @@ class MyApp extends StatelessWidget {
               GetPage(name: '/login', page: () => LoginPage()),
               GetPage(name: '/modify', page: () => ModifyPage()),
             ],
+            debugShowCheckedModeBanner: false,
           );
         } else {
           return CircularProgressIndicator();

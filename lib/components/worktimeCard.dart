@@ -8,9 +8,12 @@ class WorkTimeCard extends StatefulWidget {
   const WorkTimeCard({
     Key? key,
     required this.work,
+    required this.updateWork,
   }) : super(key: key);
 
   final Work work;
+
+  final Function updateWork;
 
   @override
   _WorkTimeCardState createState() => _WorkTimeCardState();
@@ -45,8 +48,12 @@ class _WorkTimeCardState extends State<WorkTimeCard> {
                 ),
               )
             : InkWell(
-                onTap: () {
-                  Get.toNamed('/modify', arguments: widget.work);
+                onTap: () async {
+                  var result =
+                      await Get.toNamed('/modify', arguments: widget.work);
+                  if (result != null) {
+                    widget.updateWork();
+                  }
                 },
                 child: Column(
                   children: [
