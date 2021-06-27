@@ -8,6 +8,7 @@ import 'package:commute_app/constants.dart';
 import 'package:commute_app/models/annualLeave.dart';
 import 'package:commute_app/models/work.dart';
 import 'package:commute_app/models/workState.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
@@ -54,6 +55,7 @@ class _MainPageState extends State<MainPage> {
             mealTime: Work.defaultMealTime(),
             workingTime: Work.defaultWorkingTime(),
             annualLeave: AnnualLeave.NONE.index,
+            userId: FirebaseAuth.instance.currentUser!.uid,
           ),
         )
         .then((value) => value)
@@ -212,9 +214,9 @@ class _MainPageState extends State<MainPage> {
                   ),
                 ],
               ),
-              SizedBox(
-                height: 30,
-              ),
+              // SizedBox(
+              //   height: 30,
+              // ),
               WorkingBar(work: work),
               Expanded(
                 child: Column(

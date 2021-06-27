@@ -4,6 +4,7 @@ import 'package:commute_app/components/weeklyWorkCard.dart';
 import 'package:commute_app/constants.dart';
 import 'package:commute_app/models/annualLeave.dart';
 import 'package:commute_app/models/work.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
@@ -36,8 +37,8 @@ class _WeeklyWorkPageState extends State<WeeklyWorkPage> {
 
   Future<void> setWork() async {
     List<QueryDocumentSnapshot<Work>> workListInServer = await workRef
+        .where('userId', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
         .where('startTime', isGreaterThanOrEqualTo: startTime)
-        .where('startTime', isLessThanOrEqualTo: endTime)
         .get()
         .then((value) => value.docs);
 

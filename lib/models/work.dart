@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:commute_app/models/annualLeave.dart';
 import 'package:commute_app/models/workState.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:intl/intl.dart';
 
 class Work {
@@ -30,6 +31,7 @@ class Work {
   int mealTime;
   bool isAddMealTime;
   int annualLeave;
+  String userId;
   DocumentReference? reference;
 
   String get startWorkTime =>
@@ -48,6 +50,7 @@ class Work {
     required this.mealTime,
     required this.isAddMealTime,
     required this.annualLeave,
+    required this.userId,
     this.reference,
   }) {
     print('startTime $startTime');
@@ -81,6 +84,7 @@ class Work {
             mealTime: json['mealTime']! as int,
             isAddMealTime: json['isAddMealTime']! as bool,
             annualLeave: json['annualLeave']! as int,
+            userId: json['userId']! as String,
             reference: reference);
 
   Map<String, dynamic> toJson() {
@@ -91,6 +95,7 @@ class Work {
       "mealTime": mealTime,
       "isAddMealTime": isAddMealTime,
       "annualLeave": annualLeave,
+      "userId": userId
     };
   }
 
@@ -101,12 +106,14 @@ class Work {
 
   static Work createDefaultWork() {
     return Work(
-        startTime: DateFormat('yyyyMMddHHmm').format(_defaultWorkTime),
-        endTime: DateFormat('yyyyMMddHHmm').format(_defaultWorkTime),
-        isAddMealTime: false,
-        mealTime: _defaultMealDuration,
-        workingTime: 0,
-        annualLeave: AnnualLeave.NONE.index);
+      startTime: DateFormat('yyyyMMddHHmm').format(_defaultWorkTime),
+      endTime: DateFormat('yyyyMMddHHmm').format(_defaultWorkTime),
+      isAddMealTime: false,
+      mealTime: _defaultMealDuration,
+      workingTime: 0,
+      annualLeave: AnnualLeave.NONE.index,
+      userId: FirebaseAuth.instance.currentUser!.uid,
+    );
   }
 
   static Work createOnLeaveWork() {
@@ -117,6 +124,7 @@ class Work {
       mealTime: Work.defaultMealTime(),
       workingTime: Work.defaultWorkingTime(),
       annualLeave: AnnualLeave.ONLEAVE.index,
+      userId: FirebaseAuth.instance.currentUser!.uid,
     );
   }
 
