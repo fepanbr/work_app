@@ -24,12 +24,15 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   late WorkState _workState;
-  final workRef =
-      FirebaseFirestore.instance.collection('work').withConverter<Work>(
-            fromFirestore: (snapshot, _) =>
-                Work.fromJson(snapshot.data()!, snapshot.reference),
-            toFirestore: (work, _) => work.toJson(),
-          );
+  final workRef = FirebaseFirestore.instance
+      .collection('user')
+      .doc(FirebaseAuth.instance.currentUser!.uid)
+      .collection('work')
+      .withConverter<Work>(
+        fromFirestore: (snapshot, _) =>
+            Work.fromJson(snapshot.data()!, snapshot.reference),
+        toFirestore: (work, _) => work.toJson(),
+      );
   late Work work;
   String workingMsg = '';
 
@@ -55,7 +58,6 @@ class _MainPageState extends State<MainPage> {
             mealTime: Work.defaultMealTime(),
             workingTime: Work.defaultWorkingTime(),
             annualLeave: AnnualLeave.NONE.index,
-            userId: FirebaseAuth.instance.currentUser!.uid,
           ),
         )
         .then((value) => value)

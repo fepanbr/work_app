@@ -31,7 +31,6 @@ class Work {
   int mealTime;
   bool isAddMealTime;
   int annualLeave;
-  String userId;
   DocumentReference? reference;
 
   String get startWorkTime =>
@@ -50,7 +49,6 @@ class Work {
     required this.mealTime,
     required this.isAddMealTime,
     required this.annualLeave,
-    required this.userId,
     this.reference,
   }) {
     print('startTime $startTime');
@@ -84,7 +82,6 @@ class Work {
             mealTime: json['mealTime']! as int,
             isAddMealTime: json['isAddMealTime']! as bool,
             annualLeave: json['annualLeave']! as int,
-            userId: json['userId']! as String,
             reference: reference);
 
   Map<String, dynamic> toJson() {
@@ -95,7 +92,6 @@ class Work {
       "mealTime": mealTime,
       "isAddMealTime": isAddMealTime,
       "annualLeave": annualLeave,
-      "userId": userId
     };
   }
 
@@ -112,7 +108,6 @@ class Work {
       mealTime: _defaultMealDuration,
       workingTime: 0,
       annualLeave: AnnualLeave.NONE.index,
-      userId: FirebaseAuth.instance.currentUser!.uid,
     );
   }
 
@@ -124,7 +119,6 @@ class Work {
       mealTime: Work.defaultMealTime(),
       workingTime: Work.defaultWorkingTime(),
       annualLeave: AnnualLeave.ONLEAVE.index,
-      userId: FirebaseAuth.instance.currentUser!.uid,
     );
   }
 

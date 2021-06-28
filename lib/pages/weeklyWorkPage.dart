@@ -20,12 +20,15 @@ class WeeklyWorkPage extends StatefulWidget {
 class _WeeklyWorkPageState extends State<WeeklyWorkPage> {
   final int friday = 5;
   int weeklyWorkingTime = 2400;
-  final workRef =
-      FirebaseFirestore.instance.collection('work').withConverter<Work>(
-            fromFirestore: (snapshot, _) =>
-                Work.fromJson(snapshot.data()!, snapshot.reference),
-            toFirestore: (work, _) => work.toJson(),
-          );
+  final workRef = FirebaseFirestore.instance
+      .collection('user')
+      .doc(FirebaseAuth.instance.currentUser!.uid)
+      .collection('work')
+      .withConverter<Work>(
+        fromFirestore: (snapshot, _) =>
+            Work.fromJson(snapshot.data()!, snapshot.reference),
+        toFirestore: (work, _) => work.toJson(),
+      );
   List<Work> workList = [];
   final now = DateTime.now();
   var startTime = DateFormat("yyyyMMddHHmm").format(Work.monday);
@@ -37,7 +40,6 @@ class _WeeklyWorkPageState extends State<WeeklyWorkPage> {
 
   Future<void> setWork() async {
     List<QueryDocumentSnapshot<Work>> workListInServer = await workRef
-        .where('userId', isEqualTo: FirebaseAuth.instance.currentUser!.uid)
         .where('startTime', isGreaterThanOrEqualTo: startTime)
         .get()
         .then((value) => value.docs);
@@ -73,11 +75,17 @@ class _WeeklyWorkPageState extends State<WeeklyWorkPage> {
   }
 
   calculateWorkingTimeInWeek() {
-    var workingTimeSum = workList
+    int workingTimeSum = 0;
+    var workingTimeList = workList
         .where((element) => element.annualLeave != AnnualLeave.ONLEAVE.index)
         .where((element) => element.workingTime != 0)
-        .map((e) => e.workingTime)
-        .reduce((value, element) => value += element);
+        .map((e) => e.workingTime);
+
+    if (workingTimeList.isEmpty == false) {
+      workingTimeSum =
+          workingTimeList.reduce((value, element) => value += element);
+    }
+
     restWorkingTime = weeklyWorkingTime - workingTimeSum;
     var hour = restWorkingTime ~/ 60;
     var minutes = restWorkingTime % 60;
