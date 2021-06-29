@@ -121,7 +121,7 @@ class _MainPageState extends State<MainPage> {
       await workRef
           .doc(work.reference!.id)
           .update(work.toJson())
-          .then((value) => print('저장'));
+          .then((value) => setWork());
     } else {
       Fluttertoast.showToast(
           msg: "수정은 출근, 연차 지정 후 사용할 수 있습니다.",

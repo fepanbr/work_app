@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:numberpicker/numberpicker.dart';
 
 class ModifyPage extends StatefulWidget {
   @override
@@ -13,9 +14,13 @@ class ModifyPage extends StatefulWidget {
 
 class _ModifyPageState extends State<ModifyPage> {
   Work work = Get.arguments;
+  final TextEditingController _hourController = TextEditingController();
+  final TextEditingController _minutesController = TextEditingController();
 
   void saveWorkTime() {
     try {
+      work.mealTime = int.parse(_hourController.text) * 60 +
+          int.parse(_minutesController.text);
       work.calculateWorkingTime();
     } catch (e) {
       Fluttertoast.showToast(
@@ -48,6 +53,22 @@ class _ModifyPageState extends State<ModifyPage> {
     } else {
       return null;
     }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _hourController.text = (work.mealTime ~/ 60).toString();
+    _minutesController.text = (work.mealTime % 60).toString();
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    _hourController.dispose();
+    _minutesController.dispose();
   }
 
   @override
@@ -174,32 +195,71 @@ class _ModifyPageState extends State<ModifyPage> {
                     ),
                   ),
                   Expanded(
-                    child: Text(
-                      work.mealTimeToString,
-                      style: TextStyle(
-                        fontSize: 20,
-                      ),
-                    ),
-                  ),
+                      child: TextField(
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 20),
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                        border: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        errorBorder: InputBorder.none,
+                        disabledBorder: InputBorder.none,
+                        contentPadding: EdgeInsets.only(
+                            left: 15, bottom: 11, top: 11, right: 15),
+                        hintText: "1"),
+                    controller: _hourController,
+                  )),
                   Expanded(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) => AlertDialog(
-                              title: Text('식사시간 변경'),
-                              content: Container(
-                                child: Text('구현 준비중입니다.'),
-                              )),
-                        );
-                      },
-                      child: Text('수정하기'),
-                      style: ButtonStyle(
-                        backgroundColor:
-                            MaterialStateProperty.all(kPrimaryColor),
-                      ),
-                    ),
-                  )
+                      child: Text(
+                    '시간',
+                    style: TextStyle(fontSize: 20),
+                  )),
+                  Expanded(
+                      child: TextField(
+                    textAlign: TextAlign.center,
+                    style: TextStyle(fontSize: 20),
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                        border: InputBorder.none,
+                        focusedBorder: InputBorder.none,
+                        enabledBorder: InputBorder.none,
+                        errorBorder: InputBorder.none,
+                        disabledBorder: InputBorder.none,
+                        contentPadding: EdgeInsets.only(
+                            left: 15, bottom: 11, top: 11, right: 15),
+                        hintText: "0"),
+                    controller: _minutesController,
+                  )),
+                  Expanded(
+                      child: Text(
+                    '분',
+                    style: TextStyle(fontSize: 20),
+                  )),
+
+                  // Expanded(
+                  //   child: ElevatedButton(
+                  //     onPressed: () {
+                  //       // showDialog(
+                  //       //   context: context,
+                  //       //   builder: (context) => AlertDialog(
+                  //       //       title: Text('식사시간 변경'),
+                  //       //       content: Container(
+                  //       //         child: Column(
+                  //       //           children: [
+
+                  //       //           ],
+                  //       //         ),
+                  //       //       )),
+                  //       // );
+                  //     },
+                  //     child: Text('수정하기'),
+                  //     style: ButtonStyle(
+                  //       backgroundColor:
+                  //           MaterialStateProperty.all(kPrimaryColor),
+                  //     ),
+                  //   ),
+                  // )
                 ],
               ),
             ),
@@ -230,7 +290,7 @@ class _ModifyPageState extends State<ModifyPage> {
                   Expanded(
                     child: ElevatedButton(
                       onPressed: () async {
-                        var result = await showDialog(
+                        await showDialog(
                           context: context,
                           builder: (context) => AlertDialog(
                             title: Text('휴일 선택'),
