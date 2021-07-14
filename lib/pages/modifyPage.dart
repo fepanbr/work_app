@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
-import 'package:numberpicker/numberpicker.dart';
 
 class ModifyPage extends StatefulWidget {
   @override
@@ -57,7 +56,6 @@ class _ModifyPageState extends State<ModifyPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _hourController.text = (work.mealTime ~/ 60).toString();
     _minutesController.text = (work.mealTime % 60).toString();
@@ -65,7 +63,6 @@ class _ModifyPageState extends State<ModifyPage> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     super.dispose();
     _hourController.dispose();
     _minutesController.dispose();
