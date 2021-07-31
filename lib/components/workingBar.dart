@@ -20,16 +20,40 @@ class WorkingBar extends StatefulWidget {
   _WorkingBarState createState() => _WorkingBarState();
 }
 
-class _WorkingBarState extends State<WorkingBar> {
+class _WorkingBarState extends State<WorkingBar> with WidgetsBindingObserver {
   double percent = 0.0;
-
   @override
   void initState() {
     super.initState();
-
+    WidgetsBinding.instance!.addObserver(this);
     Future.delayed(Duration(milliseconds: 100), () {
       calculatePercent();
     });
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance!.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    switch (state) {
+      case AppLifecycleState.resumed:
+        print("app in resumed");
+        calculatePercent();
+        break;
+      case AppLifecycleState.inactive:
+        print("app in inactive");
+        break;
+      case AppLifecycleState.paused:
+        print("app in paused");
+        break;
+      case AppLifecycleState.detached:
+        print("app in detached");
+        break;
+    }
   }
 
   void calculatePercent() {

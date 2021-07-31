@@ -2,6 +2,7 @@ import 'package:commute_app/constants.dart';
 import 'package:commute_app/pages/loginPage.dart';
 import 'package:commute_app/pages/mainPage.dart';
 import 'package:commute_app/pages/weeklyWorkPage.dart';
+import 'package:commute_app/pages/yearOffMgmtPage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -16,27 +17,29 @@ class _HomePageState extends State<HomePage>
   late TabController tabController;
   List<Tab> tabs = [];
   int _selectedIndex = 0;
-  static const TextStyle optionStyle =
-      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+  // static const TextStyle optionStyle =
+  //     TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
   static List<Widget> _widgetOptions = <Widget>[
     MainPage(),
     WeeklyWorkPage(),
-    Text(
-      'Index 2: School',
-      style: optionStyle,
-    ),
+    YearOffWorkMgmtPage(),
   ];
-
-  void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
-  }
 
   @override
   void initState() {
     super.initState();
     tabController = TabController(length: 3, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+  }
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
   }
 
   @override
